@@ -6,11 +6,13 @@ import {
   deleteEvent,
   getEvents,
   getEvent,
+  searchByTag,
 } from "../handlers/eventHandle";
 
 const eventRouter = express.Router();
 eventRouter.get("/all", getEvents);
 eventRouter.get("/", getEvent);
+eventRouter.get("/tag", searchByTag);
 // REQUIRE TOKEN
 eventRouter.use(authToken);
 eventRouter.post("/new", createEvent);

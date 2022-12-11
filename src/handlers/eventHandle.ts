@@ -21,7 +21,9 @@ export const getEvent: RequestHandler = async (req, res) => {
   try {
     const searchEvento: EventoInterface = await Evento.findOne({
       title: body.title,
-    });
+    })
+      .populate("idOwner", "alias img")
+      .exec();
     if (searchEvento == null) return error(res, "Not found", 404);
     success(res, searchEvento, 200);
   } catch (err) {
@@ -79,7 +81,7 @@ export const deleteEvent: RequestHandler = async (req, res) => {
   const eventoFind: EventoInterface = await Evento.findOne({
     title: body.title,
   })
-    .populate("idOwner")
+    .populate("idOwner", "email")
     .exec();
   if (eventoFind == null) {
     return error(res, "Not found", 404);
@@ -101,4 +103,17 @@ export const deleteEvent: RequestHandler = async (req, res) => {
   } catch (err) {
     error(res, err.message, 500);
   }
+};
+
+export const searchByTag: RequestHandler = async (req, res) => {
+  const body: {
+    tags: string[];
+  } = req.body;
+  const eventoFind: EventoInterface[] = await Evento.find({
+    tags: { $in: body.tags },
+  });
+  if (eventoFind[0] == null) {
+    return error(res, "Not found", 404);
+  }
+  success(res, eventoFind, 200);
 };
