@@ -11,7 +11,9 @@ import {
 import { success, fail, error, unauthorized } from "./base";
 
 export const getEvents: RequestHandler = async (req, res) => {
-  console.log("getEvents");
+  const searchEvento: EventoInterface[] = await Evento.find({});
+  if (searchEvento == null) return error(res, "Not found", 404);
+  success(res, searchEvento, 200);
 };
 
 export const getEvent: RequestHandler = async (req, res) => {
@@ -116,4 +118,21 @@ export const searchByTag: RequestHandler = async (req, res) => {
     return error(res, "Not found", 404);
   }
   success(res, eventoFind, 200);
+};
+
+export const dailyEvento: RequestHandler = async (req, res) => {
+  const date = new Date().setHours(0, 0, 0, 0);
+  const ddate = new Date().setHours(23, 59, 59, 999);
+  try {
+    const eventoFind: EventoInterface[] = await Evento.find()
+      .or([
+        { dateFinish: { $gte: date, $lte: ddate } },
+        { dateStart: { $gte: date, $lte: ddate } },
+      ])
+      .sort({ dateStart: "asc" });
+    if (eventoFind[0] == null) return error(res, "Not found", 404);
+    success(res, eventoFind, 200);
+  } catch (err) {
+    error(res, err.message, 500);
+  }
 };
