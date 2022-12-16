@@ -74,7 +74,25 @@ export const createEvent: RequestHandler = async (req, res) => {
 };
 
 export const modifyEvent: RequestHandler = async (req, res) => {
-  console.log("modifyEvent");
+  const body: EventoInterface = req.body;
+  const auth: JwtPayload = req.body.auth;
+  try {
+    const searchEvento: EventoInterface = await Evento.findOne({
+      _id: body._id,
+    }).exec();
+    if (searchEvento == null) return error(res, "Not found", 404);
+    if (searchEvento.idOwner != auth._id) return unauthorized(res);
+    for (const key in body) {
+      if (body.hasOwnProperty(key)) {
+        searchEvento[key] = body[key];
+      }
+    }
+    const modifiedEvento = new Evento(searchEvento);
+    const createEvento = await modifiedEvento.save();
+    success(res, searchEvento, 200);
+  } catch (err) {
+    error(res, err.message, 500);
+  }
 };
 
 export const deleteEvent: RequestHandler = async (req, res) => {

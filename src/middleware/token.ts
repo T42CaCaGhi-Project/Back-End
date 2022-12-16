@@ -12,6 +12,7 @@ import { error } from "../handlers/base";
 
 export const generateToken = (data: JwtPayload): string => {
   const payload: JwtPayload = {
+    _id: data._id,
     isAdm: data.isAdm | 0,
     isOrg: data.isOrg | 0,
     sub: data.sub,

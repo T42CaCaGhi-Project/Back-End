@@ -60,6 +60,7 @@ export const loginUser: RequestHandler = async (req, res) => {
     if (userFind != null) {
       if (await compare(body.password, userFind.password)) {
         const token = generateToken({
+          _id: userFind._id,
           sub: userFind.email,
           isAdm: userFind.isAdm,
           isOrg: userFind.isOrg,
