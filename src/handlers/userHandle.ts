@@ -99,6 +99,28 @@ export const getUser: RequestHandler = async (req, res) => {
   }
 };
 
+export const modifyUser: RequestHandler = async (req, res) => {
+  const body: UserInterface = req.body;
+  const auth: JwtPayload = req.body.auth;
+  try {
+    const searchUser: UserInterface = await User.findOne({
+      _id: body._id,
+    }).exec();
+    if (searchUser == null) return error(res, "Not found", 404);
+    if (searchUser._id != auth._id) return unauthorized(res);
+    for (const key in body) {
+      if (body.hasOwnProperty(key)) {
+        searchUser[key] = body[key];
+      }
+    }
+    const modifiedEvento = new User(searchUser);
+    const createEvento = await modifiedEvento.save();
+    success(res, searchUser, 200);
+  } catch (err) {
+    error(res, err.message, 500);
+  }
+};
+
 export const deleteUser: RequestHandler = async (req, res) => {
   const body: {
     email: string;

@@ -81,7 +81,8 @@ export const modifyEvent: RequestHandler = async (req, res) => {
       _id: body._id,
     }).exec();
     if (searchEvento == null) return error(res, "Not found", 404);
-    if (searchEvento.idOwner != auth._id) return unauthorized(res);
+    if (searchEvento.idOwner != auth._id || !auth.isAdm)
+      return unauthorized(res);
     for (const key in body) {
       if (body.hasOwnProperty(key)) {
         searchEvento[key] = body[key];
