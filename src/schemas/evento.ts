@@ -14,7 +14,7 @@ export interface EventoInterface {
   dateFinish: Date;
   title: string;
   tags: string[];
-  image: String;
+  image: string;
   description: string;
   nParticipants: number;
 }

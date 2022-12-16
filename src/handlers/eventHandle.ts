@@ -1,7 +1,8 @@
-import http from "node:http";
 import { RequestHandler, response } from "express";
 import { JwtPayload } from "jsonwebtoken";
 import { Types, SchemaTypes } from "mongoose";
+import fs from "node:fs";
+import path from "node:path";
 import {
   Evento,
   EventoInterface,
@@ -9,6 +10,8 @@ import {
   UserInterface,
 } from "../schemas/schemaIndex";
 import { success, fail, error, unauthorized } from "./base";
+
+const uploadsFolder = __dirname + "/../../uploads";
 
 export const getEvents: RequestHandler = async (req, res) => {
   const searchEvento: EventoInterface[] = await Evento.find({});
@@ -120,10 +123,28 @@ export const searchByTag: RequestHandler = async (req, res) => {
   success(res, eventoFind, 200);
 };
 
-export const dailyEvento: RequestHandler = async (req, res) => {
-  const date = new Date().setHours(0, 0, 0, 0);
-  const ddate = new Date().setHours(23, 59, 59, 999);
+export const periodEvento: RequestHandler = async (req, res) => {
+  const body: {
+    date: string;
+    span: string;
+  } = req.body;
+  const date = body.date;
+  let ddate: number;
   try {
+    const baseDate = new Date(date);
+    switch (body.span) {
+      case "day":
+        ddate = baseDate.getTime() + 86400000;
+        break;
+      case "week":
+        ddate = baseDate.getTime() + 604800000;
+        break;
+      case "month":
+        ddate = baseDate.getTime() + 86400000 * 30;
+        break;
+      default:
+        break;
+    }
     const eventoFind: EventoInterface[] = await Evento.find()
       .or([
         { dateFinish: { $gte: date, $lte: ddate } },
@@ -136,3 +157,12 @@ export const dailyEvento: RequestHandler = async (req, res) => {
     error(res, err.message, 500);
   }
 };
+
+export const imageTest: RequestHandler = async (req, res) => {
+  if (req.file != undefined) console.log(req.file);
+  else console.log("Missing file");
+  console.log(req.body);
+  success(res, "ogey", 200);
+};
+
+//  const img = fs.readFileSync(path.join(uploadsFolder + req.file.filename));

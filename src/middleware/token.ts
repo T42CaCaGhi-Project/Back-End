@@ -1,3 +1,4 @@
+import { RequestHandler } from "express";
 import {
   JsonWebTokenError,
   Jwt,
@@ -22,7 +23,7 @@ export const generateToken = (data: JwtPayload): string => {
   return sign(payload, process.env.ACCESS_TOKEN_SECRET, option);
 };
 
-export const authToken = (req, res, next) => {
+export const authToken: RequestHandler = (req, res, next) => {
   const authHeader: string = req.headers["authorization"];
   const token: string = authHeader && authHeader.split(" ")[1];
   if (token == null) {
