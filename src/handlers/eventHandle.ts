@@ -1,8 +1,6 @@
 import { RequestHandler, response } from "express";
 import { JwtPayload } from "jsonwebtoken";
 import { Types, SchemaTypes } from "mongoose";
-import fs from "node:fs";
-import path from "node:path";
 import {
   Evento,
   EventoInterface,
@@ -11,14 +9,95 @@ import {
 } from "../schemas/schemaIndex";
 import { success, fail, error, unauthorized } from "./base";
 
-const uploadsFolder = __dirname + "/../../uploads";
-
+/**
+ * @swagger
+ * /api/event/all:
+ *   get:
+ *     tags:
+ *       - Event
+ *     summary: Get all Events
+ *     security: []
+ *     responses:
+ *       '200':
+ *          description: Found Events
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: object
+ *                properties:
+ *                  status:
+ *                    type: string
+ *                    example: success
+ *                  data:
+ *                    type: array
+ *                    items:
+ *                      $ref: '#/definitions/Event'
+ *       '404':
+ *          description: Not found
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/errorRes'
+ *       '500':
+ *          description: internal error
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/errorRes'
+ */
 export const getEvents: RequestHandler = async (req, res) => {
-  const searchEvento: EventoInterface[] = await Evento.find({});
-  if (searchEvento == null) return error(res, "Not found", 404);
-  success(res, searchEvento, 200);
+  try {
+    const searchEvento: EventoInterface[] = await Evento.find({});
+    if (searchEvento == null) return error(res, "Not found", 404);
+    success(res, searchEvento, 200);
+  } catch (err) {
+    error(res, err.message, 500);
+  }
 };
-
+/**
+ * @swagger
+ * /api/event/:
+ *   post:
+ *     tags:
+ *       - Event
+ *     summary: Get Event by title (will change to 'by _id')
+ *     security: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               title:
+ *                 type: string
+ *                 example: eventTitle
+ *     responses:
+ *       '200':
+ *          description: Found Event
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: object
+ *                properties:
+ *                  status:
+ *                    type: string
+ *                    example: success
+ *                  data:
+ *                    $ref: '#/definitions/Event'
+ *       '404':
+ *          description: Not found
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/errorRes'
+ *       '500':
+ *          description: internal error
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/errorRes'
+ */
 export const getEvent: RequestHandler = async (req, res) => {
   const body: {
     title: string;
@@ -35,26 +114,64 @@ export const getEvent: RequestHandler = async (req, res) => {
     error(res, err.message, 500);
   }
 };
-
+/**
+ * @swagger
+ * /api/event/new:
+ *   post:
+ *     tags:
+ *       - Event
+ *     summary: Create new Event
+ *     description: properties _id and idOwner are not required
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/definitions/Event'
+ *     responses:
+ *       '200':
+ *          description: Found Events
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: object
+ *                properties:
+ *                  status:
+ *                    type: string
+ *                    example: success
+ *                  data:
+ *                    type: object
+ *       '409':
+ *          description: Already Exists
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/errorRes'
+ *       '500':
+ *          description: internal error
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/errorRes'
+ */
 export const createEvent: RequestHandler = async (req, res) => {
   const body: EventoInterface = req.body;
   const auth: JwtPayload = req.body.auth;
   try {
     if (auth.isOrg) {
-      const idOwner: UserInterface = await User.findOne({
-        email: auth.sub,
-      });
       const eventoFind: EventoInterface = await Evento.findOne({
         title: body.title,
+        dateStart: body.dateStart,
       }).exec();
       if (eventoFind != null) return fail(res, "Event already exists", 409);
-      //https://nominatim.openstreetmap.org/search?q=<data>&format=jsonv2
       const newEvento = new Evento({
-        idOwner: idOwner._id,
+        idOwner: auth._id,
         location: {
           name: body.location.name,
           city: body.location.city,
           street: body.location.street,
+          lat: body.location.lat,
+          lon: body.location.lon,
         },
         dateStart: body.dateStart,
         dateFinish: body.dateFinish,
@@ -72,7 +189,55 @@ export const createEvent: RequestHandler = async (req, res) => {
     error(res, err.message, 500);
   }
 };
-
+/**
+ * @swagger
+ * /api/event/period:
+ *   post:
+ *     tags:
+ *       - Event
+ *     summary: Get all Events taking place within day/week/month
+ *     security: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               date:
+ *                 type: string
+ *                 example: 2022-12-19T00:00:00
+ *               span:
+ *                 type: string
+ *                 exampe: day - week - month
+ *     responses:
+ *       '200':
+ *          description: Found Events
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: object
+ *                properties:
+ *                  status:
+ *                    type: string
+ *                    example: success
+ *                  data:
+ *                    type: array
+ *                    items:
+ *                      $ref: '#/definitions/Event'
+ *       '404':
+ *          description: Not found
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/errorRes'
+ *       '500':
+ *          description: internal error
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/errorRes'
+ */
 export const modifyEvent: RequestHandler = async (req, res) => {
   const body: EventoInterface = req.body;
   const auth: JwtPayload = req.body.auth;
@@ -95,7 +260,55 @@ export const modifyEvent: RequestHandler = async (req, res) => {
     error(res, err.message, 500);
   }
 };
-
+/**
+ * @swagger
+ * /api/event/period:
+ *   post:
+ *     tags:
+ *       - Event
+ *     summary: Get all Events taking place within day/week/month
+ *     security: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               date:
+ *                 type: string
+ *                 example: 2022-12-19T00:00:00
+ *               span:
+ *                 type: string
+ *                 exampe: day - week - month
+ *     responses:
+ *       '200':
+ *          description: Found Events
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: object
+ *                properties:
+ *                  status:
+ *                    type: string
+ *                    example: success
+ *                  data:
+ *                    type: array
+ *                    items:
+ *                      $ref: '#/definitions/Event'
+ *       '404':
+ *          description: Not found
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/errorRes'
+ *       '500':
+ *          description: internal error
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/errorRes'
+ */
 export const deleteEvent: RequestHandler = async (req, res) => {
   const body: {
     title: string;
@@ -128,7 +341,54 @@ export const deleteEvent: RequestHandler = async (req, res) => {
     error(res, err.message, 500);
   }
 };
-
+/**
+ * @swagger
+ * /api/event/tag:
+ *   post:
+ *     tags:
+ *       - Event
+ *     summary: Get Events by tag
+ *     security: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               tags:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                   example: tag
+ *     responses:
+ *       '200':
+ *          description: Found Events
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: object
+ *                properties:
+ *                  status:
+ *                    type: string
+ *                    example: success
+ *                  data:
+ *                    type: array
+ *                    items:
+ *                      $ref: '#/definitions/Event'
+ *       '404':
+ *          description: Not found
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/errorRes'
+ *       '500':
+ *          description: internal error
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/errorRes'
+ */
 export const searchByTag: RequestHandler = async (req, res) => {
   const body: {
     tags: string[];
@@ -141,7 +401,55 @@ export const searchByTag: RequestHandler = async (req, res) => {
   }
   success(res, eventoFind, 200);
 };
-
+/**
+ * @swagger
+ * /api/event/period:
+ *   post:
+ *     tags:
+ *       - Event
+ *     summary: Get all Events taking place within day/week/month
+ *     security: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               date:
+ *                 type: string
+ *                 example: 2022-12-19T00:00:00
+ *               span:
+ *                 type: string
+ *                 exampe: day - week - month
+ *     responses:
+ *       '200':
+ *          description: Found Events
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: object
+ *                properties:
+ *                  status:
+ *                    type: string
+ *                    example: success
+ *                  data:
+ *                    type: array
+ *                    items:
+ *                      $ref: '#/definitions/Event'
+ *       '404':
+ *          description: Not found
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/errorRes'
+ *       '500':
+ *          description: internal error
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/errorRes'
+ */
 export const periodEvento: RequestHandler = async (req, res) => {
   const body: {
     date: string;

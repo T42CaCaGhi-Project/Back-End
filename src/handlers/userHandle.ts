@@ -15,7 +15,66 @@ const hashing = async (password: string): Promise<string> => {
     console.log(error);
   }
 };
-
+/**
+ * @swagger
+ * /api/user/new:
+ *   post:
+ *     tags:
+ *       - User
+ *     summary: Create new User
+ *     security: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 example: name.surname@mail.com
+ *               password:
+ *                 type: string
+ *                 example: mypassword
+ *               isAdm:
+ *                 type: boolean
+ *                 example: false
+ *               isOrg:
+ *                 type: boolean
+ *                 example: false
+ *     responses:
+ *       '200':
+ *          description: Successfully created new User
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: object
+ *                properties:
+ *                  status:
+ *                    type: string
+ *                    example: success
+ *                  data:
+ *                    type: object
+ *                    example: {}
+ *       '400':
+ *          description: Missing input data
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/errorRes'
+ *       '409':
+ *          description: User already exists
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/errorRes'
+ *       '500':
+ *          description: internal error
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/errorRes'
+ */
 export const createUser: RequestHandler = async (req, res) => {
   try {
     /* const body: {
@@ -45,7 +104,66 @@ export const createUser: RequestHandler = async (req, res) => {
     error(res, err.message, 500);
   }
 };
-
+/**
+ * @swagger
+ * /api/user/login:
+ *   post:
+ *     tags:
+ *       - User
+ *     summary: User login
+ *     security: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 example: name.surname@mail.com
+ *               password:
+ *                 type: string
+ *                 example: mypassword
+ *     responses:
+ *       '200':
+ *          description: Successfully logged in User
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: object
+ *                properties:
+ *                  status:
+ *                    type: string
+ *                    example: success
+ *                  data:
+ *                    type: string
+ *                    example: newAuthToken
+ *       '400':
+ *          description: Login credentials not submitted
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/errorRes'
+ *       '401':
+ *          description: incorrect password
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/errorRes'
+ *       '404':
+ *          description: User not found
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/errorRes'
+ *       '500':
+ *          description: internal error
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/errorRes'
+ */
 export const loginUser: RequestHandler = async (req, res) => {
   const body: {
     email: string;
@@ -120,7 +238,65 @@ export const modifyUser: RequestHandler = async (req, res) => {
     error(res, err.message, 500);
   }
 };
-
+/**
+ * @swagger
+ * /api/user/delete:
+ *   post:
+ *     tags:
+ *       - User
+ *     summary: Delete User, requires JWT
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 example: name.surname@mail.com
+ *               password:
+ *                 type: string
+ *                 example: mypassword
+ *     responses:
+ *       '200':
+ *          description: Successfully logged in User
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: object
+ *                properties:
+ *                  status:
+ *                    type: string
+ *                    example: success
+ *                  data:
+ *                    type: object
+ *                    properties:
+ *                      acknowledged:
+ *                        type: boolean
+ *                        example: true
+ *                      deletedCount:
+ *                        type: integer
+ *                        example: 1
+ *       '401':
+ *          description: unauthorized
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/errorRes'
+ *       '404':
+ *          description: User not found
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/errorRes'
+ *       '500':
+ *          description: internal error
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/errorRes'
+ */
 export const deleteUser: RequestHandler = async (req, res) => {
   const body: {
     email: string;

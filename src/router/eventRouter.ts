@@ -14,13 +14,13 @@ import { upload } from "../middleware/images";
 
 const eventRouter = express.Router();
 eventRouter.get("/all", getEvents);
-eventRouter.get("/", getEvent);
-eventRouter.get("/tag", searchByTag);
-eventRouter.get("/period", periodEvento);
+eventRouter.post("/", getEvent);
+eventRouter.post("/tag", searchByTag);
+eventRouter.post("/period", periodEvento);
 eventRouter.post("/imageTest", upload.single("eventImage"), imageTest);
 // REQUIRE TOKEN
 eventRouter.use(authToken);
 eventRouter.post("/new", createEvent);
 eventRouter.post("/modify", modifyEvent);
-eventRouter.delete("/delete", deleteEvent);
+eventRouter.post("/delete", deleteEvent);
 export default eventRouter;
