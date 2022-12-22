@@ -16,7 +16,7 @@ const options = {
     servers: [
       {
         name: "Development server",
-        url: `http://localhost:${process.env.PORT || "3000"}`,
+        url: `http://localhost:${process.env.PORT || "3300"}`,
       },
     ],
     tags: [

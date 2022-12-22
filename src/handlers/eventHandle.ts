@@ -84,7 +84,7 @@ export const getEvents: RequestHandler = async (req, res) => {
  *                    type: string
  *                    example: success
  *                  data:
- *                    $ref: '#/schemas/Event'
+ *                    $ref: '#/components/schemas/Event'
  *       '404':
  *          description: Not found
  *          content:
@@ -127,7 +127,7 @@ export const getEvent: RequestHandler = async (req, res) => {
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/schemas/Event'
+ *             $ref: '#/components/schemas/Event'
  *     responses:
  *       '200':
  *          description: Found Events
@@ -207,7 +207,7 @@ export const createEvent: RequestHandler = async (req, res) => {
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/schemas/Event'
+ *             $ref: '#/components/schemas/Event'
  *     responses:
  *       '200':
  *          description: Modified
@@ -222,7 +222,7 @@ export const createEvent: RequestHandler = async (req, res) => {
  *                  data:
  *                    type: array
  *                    items:
- *                      $ref: '#/schemas/Event'
+ *                      $ref: '#/components/schemas/Event'
  *       '401':
  *          description: unauthorized
  *          content:
@@ -276,17 +276,13 @@ export const modifyEvent: RequestHandler = async (req, res) => {
  *       content:
  *         application/json:
  *           schema:
- *             type: object
  *             properties:
- *               date:
+ *               _id:
  *                 type: string
- *                 example: 2022-12-19T00:00:00
- *               span:
- *                 type: string
- *                 exampe: day - week - month
+ *                 example: eventId
  *     responses:
  *       '200':
- *          description: Found Events
+ *          description: Deleted Event
  *          content:
  *            application/json:
  *              schema:
@@ -296,9 +292,14 @@ export const modifyEvent: RequestHandler = async (req, res) => {
  *                    type: string
  *                    example: success
  *                  data:
- *                    type: array
- *                    items:
- *                      $ref: '#/schemas/Event'
+ *                    type: object
+ *                    properties:
+ *                      acknowledged:
+ *                        type: boolean
+ *                        example: true
+ *                      deletedCount:
+ *                        type: integer
+ *                        example: 1
  *       '401':
  *          description: unauthorized
  *          content:
