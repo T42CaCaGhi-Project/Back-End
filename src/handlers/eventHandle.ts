@@ -492,10 +492,97 @@ export const periodEvento: RequestHandler = async (req, res) => {
     error(res, err.message, 500);
   }
 };
+/**
+ * @swagger
+ * /api/event/preferito:
+ *   post:
+ *     tags:
+ *       - Event
+ *     summary: Aggiungi preferito se non lo era già, rimuovilo se lo era già
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               _id:
+ *                 type: string
+ *                 example: eventoId
+ *     responses:
+ *       '200':
+ *          description: aggiunto/rimosso
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: object
+ *                properties:
+ *                  status:
+ *                    type: string
+ *                    example: success
+ *                  data:
+ *                    type: object
+ *       '401':
+ *          description: unauthorized
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/errorRes'
+ *       '404':
+ *          description: Not found
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/errorRes'
+ *       '500':
+ *          description: internal error
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/errorRes'
+ */
+export const preferito: RequestHandler = async (req, res) => {
+  const body: {
+    _id: Types.ObjectId;
+  } = req.body;
+  const auth: JwtPayload = req.body.auth;
+  try {
+    const eventoFind: EventoInterface = await Evento.findOne({
+      _id: body._id,
+    }).exec();
+    if (eventoFind == null) {
+      return error(res, "Not found", 404);
+    }
+    const userFind: UserInterface = await User.findOne({
+      _id: auth._id,
+    }).exec();
+    const index = userFind.preferiti.indexOf(eventoFind._id);
+    if (index > -1) {
+      userFind.preferiti.splice(index, 1);
+      const modifiedUser = new User(userFind);
+      const createUser = await modifiedUser.save();
+      eventoFind.nParticipants = eventoFind.nParticipants - 1;
+      const modifiedEvento = new Evento(eventoFind);
+      const createEvento = await modifiedEvento.save();
+      return success(res, {}, 200);
+    }
+    if (index == -1) {
+      userFind.preferiti.push(eventoFind._id);
+      const modifiedUser = new User(userFind);
+      const createUser = await modifiedUser.save();
+      eventoFind.nParticipants = eventoFind.nParticipants + 1;
+      const modifiedEvento = new Evento(eventoFind);
+      const createEvento = await modifiedEvento.save();
+      return success(res, {}, 200);
+    }
+  } catch (err) {
+    error(res, err.message, 500);
+  }
+};
 
-export const imageTest: RequestHandler = async (req, res) => {
+/* export const imageTest: RequestHandler = async (req, res) => {
   if (req.file != undefined) console.log(req.file);
   else console.log("Missing file");
   console.log(req.body);
   success(res, "ogey", 200);
-};
+}; */

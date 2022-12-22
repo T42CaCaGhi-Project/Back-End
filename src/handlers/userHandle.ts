@@ -137,8 +137,33 @@ export const createUser: RequestHandler = async (req, res) => {
  *                    type: string
  *                    example: success
  *                  data:
- *                    type: string
- *                    example: newAuthToken
+ *                    type: object
+ *                    properties:
+ *                      token:
+ *                        type: string
+ *                        example: authToken
+ *                      user:
+ *                        type: object
+ *                        properties:
+ *                          email:
+ *                            type: string
+ *                            example: name.surname@mail.com
+ *                          preferiti:
+ *                            type: array
+ *                            items:
+ *                                type: string
+ *                          isAdm:
+ *                            type: boolean
+ *                            example: false
+ *                          isOrg:
+ *                            type: boolean
+ *                            example: false
+ *                          alias:
+ *                            type: string
+ *                            example: alias
+ *                          img:
+ *                            type: string
+ *                            example: BASE64_img
  *       '400':
  *          description: Login credentials not submitted
  *          content:
@@ -183,7 +208,15 @@ export const loginUser: RequestHandler = async (req, res) => {
           isAdm: userFind.isAdm,
           isOrg: userFind.isOrg,
         });
-        success(res, token, 200);
+        const userResData = {
+          email: userFind.email,
+          preferiti: userFind.preferiti,
+          isAdm: userFind.isAdm,
+          isOrg: userFind.isOrg,
+          alias: userFind.alias,
+          img: userFind.img,
+        };
+        success(res, { token, userResData }, 200);
       } else {
         fail(res, "incorrect password", 401);
       }

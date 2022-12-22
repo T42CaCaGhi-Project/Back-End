@@ -8,7 +8,7 @@ import {
   getEvent,
   searchByTag,
   periodEvento,
-  imageTest,
+  preferito,
 } from "../handlers/eventHandle";
 import { upload } from "../middleware/images";
 
@@ -17,10 +17,11 @@ eventRouter.get("/all", getEvents);
 eventRouter.post("/", getEvent);
 eventRouter.post("/tag", searchByTag);
 eventRouter.post("/period", periodEvento);
-eventRouter.post("/imageTest", upload.single("eventImage"), imageTest);
+//eventRouter.post("/imageTest", upload.single("eventImage"), imageTest);
 // REQUIRE TOKEN
 eventRouter.use(authToken);
 eventRouter.post("/new", createEvent);
 eventRouter.post("/modify", modifyEvent);
 eventRouter.post("/delete", deleteEvent);
+eventRouter.post("/preferito", preferito);
 export default eventRouter;
