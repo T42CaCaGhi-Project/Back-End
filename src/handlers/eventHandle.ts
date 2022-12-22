@@ -31,7 +31,7 @@ import { success, fail, error, unauthorized } from "./base";
  *                  data:
  *                    type: array
  *                    items:
- *                      $ref: '#/definitions/Event'
+ *                      $ref: '#/schemas/Event'
  *       '404':
  *          description: Not found
  *          content:
@@ -84,7 +84,7 @@ export const getEvents: RequestHandler = async (req, res) => {
  *                    type: string
  *                    example: success
  *                  data:
- *                    $ref: '#/definitions/Event'
+ *                    $ref: '#/schemas/Event'
  *       '404':
  *          description: Not found
  *          content:
@@ -127,7 +127,7 @@ export const getEvent: RequestHandler = async (req, res) => {
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/definitions/Event'
+ *             $ref: '#/schemas/Event'
  *     responses:
  *       '200':
  *          description: Found Events
@@ -224,7 +224,7 @@ export const createEvent: RequestHandler = async (req, res) => {
  *                  data:
  *                    type: array
  *                    items:
- *                      $ref: '#/definitions/Event'
+ *                      $ref: '#/schemas/Event'
  *       '404':
  *          description: Not found
  *          content:
@@ -295,7 +295,7 @@ export const modifyEvent: RequestHandler = async (req, res) => {
  *                  data:
  *                    type: array
  *                    items:
- *                      $ref: '#/definitions/Event'
+ *                      $ref: '#/schemas/Event'
  *       '404':
  *          description: Not found
  *          content:
@@ -375,7 +375,7 @@ export const deleteEvent: RequestHandler = async (req, res) => {
  *                  data:
  *                    type: array
  *                    items:
- *                      $ref: '#/definitions/Event'
+ *                      $ref: '#/schemas/Event'
  *       '404':
  *          description: Not found
  *          content:
@@ -436,7 +436,7 @@ export const searchByTag: RequestHandler = async (req, res) => {
  *                  data:
  *                    type: array
  *                    items:
- *                      $ref: '#/definitions/Event'
+ *                      $ref: '#/schemas/Event'
  *       '404':
  *          description: Not found
  *          content:
