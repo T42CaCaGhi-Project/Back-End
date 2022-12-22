@@ -141,6 +141,12 @@ export const getEvent: RequestHandler = async (req, res) => {
  *                    example: success
  *                  data:
  *                    type: object
+ *       '401':
+ *          description: unauthorized
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/errorRes'
  *       '409':
  *          description: Already Exists
  *          content:
@@ -191,28 +197,20 @@ export const createEvent: RequestHandler = async (req, res) => {
 };
 /**
  * @swagger
- * /api/event/period:
+ * /api/event/modify:
  *   post:
  *     tags:
  *       - Event
- *     summary: Get all Events taking place within day/week/month
- *     security: []
+ *     summary: Modify Event, must be owner or admin
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             properties:
- *               date:
- *                 type: string
- *                 example: 2022-12-19T00:00:00
- *               span:
- *                 type: string
- *                 exampe: day - week - month
+ *             $ref: '#/schemas/Event'
  *     responses:
  *       '200':
- *          description: Found Events
+ *          description: Modified
  *          content:
  *            application/json:
  *              schema:
@@ -225,6 +223,12 @@ export const createEvent: RequestHandler = async (req, res) => {
  *                    type: array
  *                    items:
  *                      $ref: '#/schemas/Event'
+ *       '401':
+ *          description: unauthorized
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/errorRes'
  *       '404':
  *          description: Not found
  *          content:
@@ -262,12 +266,11 @@ export const modifyEvent: RequestHandler = async (req, res) => {
 };
 /**
  * @swagger
- * /api/event/period:
+ * /api/event/delete:
  *   post:
  *     tags:
  *       - Event
- *     summary: Get all Events taking place within day/week/month
- *     security: []
+ *     summary: Delete Event, must be owner or admin
  *     requestBody:
  *       required: true
  *       content:
@@ -296,6 +299,12 @@ export const modifyEvent: RequestHandler = async (req, res) => {
  *                    type: array
  *                    items:
  *                      $ref: '#/schemas/Event'
+ *       '401':
+ *          description: unauthorized
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/errorRes'
  *       '404':
  *          description: Not found
  *          content:
@@ -311,15 +320,13 @@ export const modifyEvent: RequestHandler = async (req, res) => {
  */
 export const deleteEvent: RequestHandler = async (req, res) => {
   const body: {
-    title: string;
+    _id: Types.ObjectId;
   } = req.body;
   const auth: JwtPayload = req.body.auth;
   let owner: UserInterface;
   const eventoFind: EventoInterface = await Evento.findOne({
-    title: body.title,
-  })
-    .populate("idOwner", "email")
-    .exec();
+    _id: body._id,
+  }).exec();
   if (eventoFind == null) {
     return error(res, "Not found", 404);
   }
@@ -329,7 +336,7 @@ export const deleteEvent: RequestHandler = async (req, res) => {
         title: eventoFind.title,
       });
       success(res, deletedRes, 200);
-    } else if (auth.isOrg && auth.sub == eventoFind.idOwner.email) {
+    } else if (auth.isOrg && auth._id == eventoFind.idOwner) {
       const deletedRes = await Evento.deleteOne({
         title: eventoFind.title,
       });
@@ -491,5 +498,3 @@ export const imageTest: RequestHandler = async (req, res) => {
   console.log(req.body);
   success(res, "ogey", 200);
 };
-
-//  const img = fs.readFileSync(path.join(uploadsFolder + req.file.filename));

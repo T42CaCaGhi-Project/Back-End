@@ -13,7 +13,12 @@ const options = {
         url: "https://opensource.org/licenses/MIT",
       },
     },
-    servers: [{ name: "Development server", url: "http://localhost:3000" }],
+    servers: [
+      {
+        name: "Development server",
+        url: `http://localhost:${process.env.PORT || "3000"}`,
+      },
+    ],
     tags: [
       {
         name: "User",
