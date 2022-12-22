@@ -18,3 +18,5 @@ app.use("/api", mainRouter);
 app.listen(port, () => {
   console.log(`app listening at port: ${port}`);
 });
+
+module.exports = app;
