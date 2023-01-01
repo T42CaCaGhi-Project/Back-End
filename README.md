@@ -4,7 +4,7 @@ Repository contenente la parte back-end del progetto
 
 # API Docs
 
-[API Documentation](localhost:3300/api-docs)
+[API Documentation](http://localhost:3300/api-docs)
 
 # Installing and Running
 
