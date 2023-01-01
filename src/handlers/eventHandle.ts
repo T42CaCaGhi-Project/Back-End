@@ -384,7 +384,7 @@ export const deleteEvent: RequestHandler = async (req, res) => {
  *                  data:
  *                    type: array
  *                    items:
- *                      $ref: '#/schemas/Event'
+ *                      $ref: '#/components/schemas/Event'
  *       '404':
  *          description: Not found
  *          content:
@@ -445,7 +445,7 @@ export const searchByTag: RequestHandler = async (req, res) => {
  *                  data:
  *                    type: array
  *                    items:
- *                      $ref: '#/schemas/Event'
+ *                      $ref: '#/components/schemas/Event'
  *       '404':
  *          description: Not found
  *          content:
