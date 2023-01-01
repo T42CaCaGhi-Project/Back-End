@@ -6,7 +6,7 @@ import { success, fail, error, unauthorized } from "./base";
 import { Jwt, JwtPayload } from "jsonwebtoken";
 import { Types } from "mongoose";
 
-const hashing = async (password: string): Promise<string> => {
+export const hashing = async (password: string): Promise<string> => {
   try {
     const salt = await bcrypt.genSalt(10);
     const hashed = await bcrypt.hash(password, salt);
@@ -228,10 +228,6 @@ export const loginUser: RequestHandler = async (req, res) => {
   }
 };
 
-export const getUsers = async () => {
-  console.log("getUsers");
-};
-
 //più che altro di debug ora
 export const getUser: RequestHandler = async (req, res) => {
   const body: {
@@ -293,7 +289,7 @@ export const modifyUser: RequestHandler = async (req, res) => {
  *                 example: mypassword
  *     responses:
  *       '200':
- *          description: Successfully logged in User
+ *          description: Successfully deleted User
  *          content:
  *            application/json:
  *              schema:

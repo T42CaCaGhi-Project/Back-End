@@ -35,8 +35,8 @@ export const authToken: RequestHandler = (req, res, next) => {
         error(res, err.message, 401);
       } else {
         req.body.auth = data;
+        next();
       }
     });
   }
-  next();
 };

@@ -74,7 +74,7 @@ const options = {
           properties: {
             _id: { type: "string" },
             idOwner: { type: "string" },
-            location: { $ref: "#/definitions/Location" },
+            location: { $ref: "#components/schemas/Location" },
             dateStart: { type: "string", format: "date-time" },
             dateFinish: { type: "string", format: "date-time" },
             title: { type: "string" },

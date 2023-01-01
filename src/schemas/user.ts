@@ -8,7 +8,7 @@ export interface UserInterface {
   isAdm: boolean;
   isOrg: boolean;
   alias: string;
-  img: Buffer;
+  img: string;
 }
 
 const UserSchema = new Schema<UserInterface>({
@@ -18,7 +18,7 @@ const UserSchema = new Schema<UserInterface>({
   isAdm: { type: Boolean, default: false },
   isOrg: { type: Boolean, default: false },
   alias: String,
-  img: Buffer,
+  img: String,
 });
 
 const User = model("User", UserSchema);

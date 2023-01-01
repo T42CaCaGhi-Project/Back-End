@@ -31,7 +31,7 @@ import { success, fail, error, unauthorized } from "./base";
  *                  data:
  *                    type: array
  *                    items:
- *                      $ref: '#/schemas/Event'
+ *                      $ref: '#/components/schemas/Event'
  *       '404':
  *          description: Not found
  *          content:
@@ -48,7 +48,7 @@ import { success, fail, error, unauthorized } from "./base";
 export const getEvents: RequestHandler = async (req, res) => {
   try {
     const searchEvento: EventoInterface[] = await Evento.find({});
-    if (searchEvento == null) return error(res, "Not found", 404);
+    if (searchEvento.length == 0) return error(res, "Not found", 404);
     success(res, searchEvento, 200);
   } catch (err) {
     error(res, err.message, 500);
@@ -60,7 +60,7 @@ export const getEvents: RequestHandler = async (req, res) => {
  *   post:
  *     tags:
  *       - Event
- *     summary: Get Event by title (will change to 'by _id')
+ *     summary: Get Event by id
  *     security: []
  *     requestBody:
  *       required: true
@@ -69,9 +69,9 @@ export const getEvents: RequestHandler = async (req, res) => {
  *           schema:
  *             type: object
  *             properties:
- *               title:
+ *               _id:
  *                 type: string
- *                 example: eventTitle
+ *                 example: event_id
  *     responses:
  *       '200':
  *          description: Found Event
@@ -100,11 +100,11 @@ export const getEvents: RequestHandler = async (req, res) => {
  */
 export const getEvent: RequestHandler = async (req, res) => {
   const body: {
-    title: string;
+    _id: Types.ObjectId;
   } = req.body;
   try {
     const searchEvento: EventoInterface = await Evento.findOne({
-      title: body.title,
+      _id: body._id,
     })
       .populate("idOwner", "alias img")
       .exec();
@@ -250,8 +250,9 @@ export const modifyEvent: RequestHandler = async (req, res) => {
       _id: body._id,
     }).exec();
     if (searchEvento == null) return error(res, "Not found", 404);
-    if (searchEvento.idOwner != auth._id || !auth.isAdm)
+    if (!(searchEvento.idOwner == auth._id || auth.isAdm)) {
       return unauthorized(res);
+    }
     for (const key in body) {
       if (body.hasOwnProperty(key)) {
         searchEvento[key] = body[key];

@@ -4,6 +4,7 @@ export interface EventoInterface {
   _id?: Types.ObjectId;
   idOwner: any;
   location: {
+    _id?: Types.ObjectId;
     name: string;
     city: string;
     street: string;
@@ -20,6 +21,7 @@ export interface EventoInterface {
 }
 
 interface LocationInterface {
+  _id?: Types.ObjectId;
   name: string;
   city: string;
   street: string;
