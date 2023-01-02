@@ -14,5 +14,4 @@ userRouter.post("/login", loginUser);
 // REQUIRE TOKEN
 userRouter.use(authToken);
 userRouter.post("/delete", deleteUser);
-userRouter.get("/", getUser);
 export default userRouter;
