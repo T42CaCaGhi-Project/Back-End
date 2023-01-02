@@ -77,12 +77,6 @@ export const hashing = async (password: string): Promise<string> => {
  */
 export const createUser: RequestHandler = async (req, res) => {
   try {
-    /* const body: {
-      email: string;
-      password: string;
-      isAdm: boolean;
-      isOrg: boolean;
-    } = req.body; */
     const body: UserInterface = req.body;
     if (!body.email || !body.password) {
       return fail(res, "Dati Mancanti", 400);
