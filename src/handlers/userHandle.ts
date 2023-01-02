@@ -223,7 +223,7 @@ export const loginUser: RequestHandler = async (req, res) => {
 };
 
 //più che altro di debug ora
-export const getUser: RequestHandler = async (req, res) => {
+/* export const getUser: RequestHandler = async (req, res) => {
   const body: {
     email: String;
   } = req.body;
@@ -238,9 +238,9 @@ export const getUser: RequestHandler = async (req, res) => {
   } catch (err) {
     error(res, err.message, 500);
   }
-};
+}; */
 
-export const modifyUser: RequestHandler = async (req, res) => {
+/* export const modifyUser: RequestHandler = async (req, res) => {
   const body: UserInterface = req.body;
   const auth: JwtPayload = req.body.auth;
   try {
@@ -260,7 +260,7 @@ export const modifyUser: RequestHandler = async (req, res) => {
   } catch (err) {
     error(res, err.message, 500);
   }
-};
+}; */
 /**
  * @swagger
  * /api/user/delete:
